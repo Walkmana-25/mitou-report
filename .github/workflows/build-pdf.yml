@@ -18,11 +18,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: typst-community/setup-typst@v4
-        with:
-          typst-version: 0.14.0
-      - name: Build PDF
-        run: make
+      - name: Build Docker image
+        run: docker build -t mitou-report-typst:ci .
+      - name: Build PDF in Docker
+        run: docker run --rm --entrypoint sh --user "$(id -u):$(id -g)" -v "${{ github.workspace }}:/workspace" -w /workspace mitou-report-typst:ci -lc "make"
       - name: Commit PDF
         run: |
           if git diff --quiet -- build/private_detailed_report.pdf; then
@@ -40,11 +39,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: typst-community/setup-typst@v4
-        with:
-          typst-version: 0.14.0
-      - name: Build PDF
-        run: make
+      - name: Build Docker image
+        run: docker build -t mitou-report-typst:ci .
+      - name: Build PDF in Docker
+        run: docker run --rm --entrypoint sh --user "$(id -u):$(id -g)" -v "${{ github.workspace }}:/workspace" -w /workspace mitou-report-typst:ci -lc "make"
       - name: Upload PDF artifact
         id: upload
         uses: actions/upload-artifact@v4
