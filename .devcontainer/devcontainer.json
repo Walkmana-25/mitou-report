@@ -1,0 +1,15 @@
+{
+  "name": "mitou-report",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": ".."
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "myriad-dreamin.tinymist",
+        "EditorConfig.EditorConfig"
+      ]
+    }
+  }
+}

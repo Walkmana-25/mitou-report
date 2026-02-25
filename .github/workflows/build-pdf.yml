@@ -1,0 +1,63 @@
+name: Build PDF
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build-and-push-pdf:
+    if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Build Docker image
+        run: docker build -t mitou-report-typst:ci .
+      - name: Build PDF in Docker
+        run: docker run --rm --entrypoint sh -v "${{ github.workspace }}:/workspace" -w /workspace mitou-report-typst:ci -c "make"
+      - name: Commit PDF
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f build/private_detailed_report.pdf
+          if git diff --cached --quiet HEAD -- build/private_detailed_report.pdf; then
+            echo "No PDF changes"
+            git reset HEAD build/private_detailed_report.pdf
+            exit 0
+          fi
+          git commit -m "chore: update generated pdf [skip ci]"
+          git push
+
+  build-pdf-for-pr:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t mitou-report-typst:ci .
+      - name: Build PDF in Docker
+        run: docker run --rm --entrypoint sh -v "${{ github.workspace }}:/workspace" -w /workspace mitou-report-typst:ci -c "make"
+      - name: Upload PDF artifact
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: private-detailed-report-pdf
+          path: build/private_detailed_report.pdf
+      - name: Comment artifact link
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `PDFをビルドしました。こちらから確認できます: ${runUrl}`,
+            });
