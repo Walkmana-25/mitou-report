@@ -89,7 +89,7 @@ make watch
 
 - GitHub Actionsは`.github/workflows/build-pdf.yml`で定義されています．
   - `push` (main): Docker imageをbuildし，PDFを生成して`build/private_detailed_report.pdf`を自動コミットします．
-  - `pull_request`: Docker imageをbuildしてPDFを生成し，ArtifactをアップロードしてPRにリンクをコメントします．
+  - `pull_request`: Docker imageをbuildしてPDFを生成し，Artifactをアップロードして、Artifactsからダウンロード可能なActions runへのリンクをPRにコメントします．
 - Dockerfile (`/Dockerfile`) にはPDF生成に必要な実行環境を定義しています（Typst, make, nodejs, npm, フォント）．
 - Devcontainer (`/.devcontainer/devcontainer.json`) は上記Dockerfileを利用し，VS Code拡張（Tinymist / EditorConfig）を追加した開発環境を提供します．
 
