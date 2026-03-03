@@ -11,5 +11,6 @@
         "EditorConfig.EditorConfig"
       ]
     }
-  }
+  },
+  "containerUser": "code"
 }
