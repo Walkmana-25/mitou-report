@@ -8,7 +8,9 @@
     "vscode": {
       "extensions": [
         "myriad-dreamin.tinymist",
-        "EditorConfig.EditorConfig"
+        "EditorConfig.EditorConfig",
+        "openai.chatgpt",
+        "Anthropic.claude-code"
       ]
     }
   },
