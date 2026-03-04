@@ -1,6 +1,7 @@
-FROM ghcr.io/typst/typst:0.14.0
+FROM ghcr.io/typst/typst:0.14.2
 
-RUN apk add --no-cache \
+RUN apk update && apk upgrade && \
+    apk add --no-cache \
     bash \
     git \
     font-ipa \
@@ -9,10 +10,14 @@ RUN apk add --no-cache \
     make \
     nodejs-current \
     npm \
-    openssh
+    openssh \
+    sudo \
+    gcompat
 
 RUN adduser -D -s /bin/bash code \
     && mkdir -p /home/code \
-    && chown -R code:code /home/code
+    && chown -R code:code /home/code \
+    && addgroup code wheel \
+    && echo "%wheel ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/wheel
 
 USER code
